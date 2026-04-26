@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quadro Kanban — Tarefas</title>
+  <link rel="stylesheet" href="/view/css/base.css" />
+  <link rel="stylesheet" href="/view/css/quadro.css" />
+</head>
+<body>
+  <!--
+    TEMPLATE DE REFERÊNCIA — Quadro Kanban Page
+    Renderizado pelo React (QuadroPage.jsx) quando rota /quadro é ativada.
+    Visão Kanban com duas colunas: Pendentes | Concluídas.
+
+    Estrutura:
+      header.quadro-header          → Título e navegação
+      div.quadro-board              → Container das colunas
+        div.quadro-column--pendente → Coluna Pendente (tasks com status=pendente)
+        div.quadro-column--concluida→ Coluna Concluída (tasks com status=concluida)
+  -->
+  <div id="root">
+    <header class="quadro-header">
+      <h1>Quadro Kanban</h1>
+      <nav>
+        <a href="/board">Ver Lista</a>
+        <a href="/tasks/new" class="btn btn--primary">+ Nova Tarefa</a>
+      </nav>
+    </header>
+
+    <div class="quadro-board">
+      <div class="quadro-column quadro-column--pendente">
+        <h2 class="quadro-column__title">
+          <span class="status-dot status-dot--pendente"></span>
+          Pendente
+          <span class="quadro-column__count" id="count-pendente">0</span>
+        </h2>
+        <div class="quadro-column__cards" id="col-pendente">
+          <!-- TaskCards status=pendente injetados pelo React -->
+        </div>
+      </div>
+
+      <div class="quadro-column quadro-column--concluida">
+        <h2 class="quadro-column__title">
+          <span class="status-dot status-dot--concluida"></span>
+          Concluída
+          <span class="quadro-column__count" id="count-concluida">0</span>
+        </h2>
+        <div class="quadro-column__cards" id="col-concluida">
+          <!-- TaskCards status=concluida injetados pelo React -->
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/view/react/main.jsx"></script>
+</body>
+</html>

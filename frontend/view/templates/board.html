@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Board de Tarefas</title>
+  <link rel="stylesheet" href="/view/css/base.css" />
+  <link rel="stylesheet" href="/view/css/board.css" />
+</head>
+<body>
+  <!--
+    TEMPLATE DE REFERÊNCIA — Board Page
+    Renderizado pelo React (BoardPage.jsx) quando rota /board é ativada.
+    Este HTML representa a estrutura estática da view antes da hidratação do React.
+
+    Estrutura:
+      header.board-header     → Título + botão Nova Tarefa
+      section.board-filters   → Filtros de status (todos / pendente / concluída)
+      section.board-list      → Lista de TaskCards
+      footer.board-footer     → Paginação / contador de tarefas
+  -->
+  <div id="root">
+    <header class="board-header">
+      <h1>Board de Tarefas</h1>
+      <a href="/tasks/new" class="btn btn--primary">+ Nova Tarefa</a>
+    </header>
+
+    <section class="board-filters">
+      <button class="filter-btn filter-btn--active" data-filter="todos">Todos</button>
+      <button class="filter-btn" data-filter="pendente">Pendente</button>
+      <button class="filter-btn" data-filter="concluida">Concluída</button>
+    </section>
+
+    <section class="board-list" id="task-list">
+      <!-- TaskCard components injetados pelo React aqui -->
+    </section>
+
+    <footer class="board-footer">
+      <span id="task-count">0 tarefas</span>
+    </footer>
+  </div>
+  <script type="module" src="/view/react/main.jsx"></script>
+</body>
+</html>

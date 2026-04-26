@@ -1,0 +1,48 @@
+# docker-compose.dev.yml — Frontend dev + BFF + Redis
+# Uso: docker compose -f docker-compose.dev.yml up --build
+# Acesse: http://localhost:5173/
+#
+# Serviços:
+#   redis-dev    → Redis 7 (porta 6379 exposta para debug local)
+#   bff-dev      → Express BFF com queue worker (porta 3000)
+#   frontend-dev → Vite React (porta 5173); proxy /api/queue → bff-dev:3000
+
+services:
+  redis-dev:
+    image: redis:7-alpine
+    container_name: redis_dev
+    ports:
+      - "6379:6379"
+
+  bff-dev:
+    image: node:20-alpine
+    container_name: bff_dev
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    command: sh -c "npm install --loglevel=error && node server.js"
+    environment:
+      - REDIS_URL=redis://redis-dev:6379
+      - BACKEND_API_URL=http://localhost/backend/api
+      - BACKEND_WEBHOOK_URL=http://localhost/backend/webhook
+      - PORT=3000
+    depends_on:
+      - redis-dev
+
+  frontend-dev:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules        # evita sobrescrever node_modules do container
+    ports:
+      - "5173:5173"
+    command: sh -c "npm config set update-notifier false && npm install --loglevel=error && npm run dev -- --host"
+    environment:
+      - VITE_BACKEND_API_URL=/backend/api
+      - VITE_BFF_URL=http://bff-dev:3000
+    depends_on:
+      - bff-dev

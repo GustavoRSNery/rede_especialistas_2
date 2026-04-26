@@ -1,0 +1,288 @@
+/* =============================================
+   BASE — Reset, Variáveis, Tipografia Global
+   Estilo inspirado no Monday.com
+   ============================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Cores principais — Monday palette */
+  --color-bg:              #f5f6f8;
+  --color-surface:         #ffffff;
+  --color-surface-raised:  #f5f6f8;
+  --color-border:          #e6e9ef;
+  --color-border-hover:    #c5c7d4;
+
+  /* Brand */
+  --color-primary:         #0073ea;
+  --color-primary-hover:   #0060c0;
+  --color-primary-light:   #e6f2ff;
+
+  /* Sidebar */
+  --color-sidebar-bg:      #1c1f3b;
+  --color-sidebar-text:    #c3c6d4;
+  --color-sidebar-hover:   rgba(255,255,255,0.07);
+  --color-sidebar-active:  rgba(255,255,255,0.12);
+  --color-sidebar-accent:  #ffffff;
+
+  /* Status — Monday exact */
+  --color-success:         #00c875;
+  --color-success-bg:      #e0f9ed;
+  --color-warning:         #fdab3d;
+  --color-warning-bg:      #fef4e5;
+  --color-danger:          #e2445c;
+  --color-danger-bg:       #fde8ec;
+  --color-info:            #0086c0;
+  --color-info-bg:         #e0f0f9;
+  --color-purple:          #784bd1;
+  --color-purple-bg:       #ede8f7;
+
+  /* Texto */
+  --color-text:            #323338;
+  --color-text-muted:      #676879;
+  --color-text-light:      #c5c7d4;
+
+  /* Layout */
+  --sidebar-width:         220px;
+  --topbar-height:         56px;
+
+  /* Misc */
+  --font-base:     'Figtree', 'Inter', system-ui, -apple-system, sans-serif;
+  --radius:        6px;
+  --radius-lg:     8px;
+  --radius-pill:   999px;
+  --shadow-sm:     0 1px 4px rgba(0,0,0,0.08);
+  --shadow:        0 4px 16px rgba(0,0,0,0.10);
+  --shadow-lg:     0 8px 32px rgba(0,0,0,0.14);
+  --transition:    0.15s ease;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 15px; scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-base);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--color-primary); text-decoration: none; }
+a:hover { color: var(--color-primary-hover); text-decoration: underline; }
+
+h1 { font-size: 1.5rem; font-weight: 700; }
+h2 { font-size: 1.1rem; font-weight: 700; }
+h3 { font-size: 0.9375rem; font-weight: 600; }
+
+/* =============================================
+   Botões Globais
+   ============================================= */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 16px;
+  border-radius: var(--radius);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background-color var(--transition), box-shadow var(--transition);
+  white-space: nowrap;
+  user-select: none;
+}
+.btn:active { opacity: 0.85; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn--primary {
+  background-color: var(--color-primary);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0,115,234,0.25);
+}
+.btn--primary:hover { background-color: var(--color-primary-hover); color: #fff; text-decoration: none; }
+
+.btn--secondary {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+.btn--secondary:hover { background-color: var(--color-surface-raised); border-color: var(--color-border-hover); }
+
+.btn--ghost {
+  background: transparent;
+  color: var(--color-text-muted);
+  border: none;
+}
+.btn--ghost:hover { background-color: var(--color-surface-raised); color: var(--color-text); }
+
+.btn--danger {
+  background-color: var(--color-surface);
+  color: var(--color-danger);
+  border: 1px solid var(--color-border);
+}
+.btn--danger:hover { background-color: var(--color-danger); color: #fff; border-color: var(--color-danger); }
+
+.btn--sm { padding: 5px 12px; font-size: 0.78rem; }
+
+/* =============================================
+   Status Badges — Monday style
+   ============================================= */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  height: 24px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+/* Status de Tarefa */
+.badge--pendente   { background-color: var(--color-warning);  color: #fff; }
+.badge--concluida  { background-color: var(--color-success);  color: #fff; }
+.badge--stuck      { background-color: var(--color-danger);   color: #fff; }
+.badge--working    { background-color: #fdab3d; color: #fff; }
+
+/* Status dot (ponto redondo) */
+.status-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.status-dot--pendente  { background-color: var(--color-warning); }
+.status-dot--concluida { background-color: var(--color-success); }
+
+/* =============================================
+   Spinner (Lazy Loading Suspense fallback)
+   ============================================= */
+
+.spinner-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 64px;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* =============================================
+   Checkbox estilo Monday
+   ============================================= */
+
+.monday-checkbox {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 2px solid var(--color-border-hover);
+  cursor: pointer;
+  flex-shrink: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: background-color var(--transition), border-color var(--transition);
+}
+.monday-checkbox:checked {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 10 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4l2.5 2.5L9 1' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+
+
+/* =============================================
+   Modal / Popup - Task creation overlay
+   ============================================= */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: modal-fade 0.15s ease;
+}
+
+@keyframes modal-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.modal {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 540px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modal-slide 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes modal-slide {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 14px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.modal__title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.modal__close {
+  font-size: 0.875rem;
+  line-height: 1;
+  padding: 5px 8px;
+  border-radius: var(--radius);
+  color: var(--color-text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color var(--transition), color var(--transition);
+}
+.modal__close:hover {
+  background-color: var(--color-surface-raised);
+  color: var(--color-text);
+}
+
+.modal .form-container {
+  margin: 0;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 20px 24px 24px;
+}

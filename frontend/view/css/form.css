@@ -1,0 +1,132 @@
+/* =============================================
+   FORM - Criacao de Tarefa estilo Monday.com
+   ============================================= */
+
+.form-header {
+  padding: 20px 24px 0;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  margin-bottom: 10px;
+}
+.breadcrumb a { color: var(--color-text-muted); }
+.breadcrumb a:hover { color: var(--color-primary); text-decoration: none; }
+.breadcrumb span { color: var(--color-border-hover); }
+
+.form-header h1 {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.form-container {
+  max-width: 680px;
+  margin: 20px 24px;
+  padding: 28px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Grupos de campos */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 18px;
+}
+
+.form-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.required {
+  color: var(--color-danger);
+  margin-left: 2px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 8px 12px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-text);
+  font-size: 0.875rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  box-sizing: border-box;
+}
+.form-input:hover  { border-color: var(--color-border-hover); }
+.form-input:focus  {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0,115,234,0.14);
+}
+.form-input::placeholder { color: var(--color-text-muted); }
+
+.form-input--textarea {
+  resize: vertical;
+  min-height: 110px;
+}
+
+.form-input--select {
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23676879' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+/* Mensagem de erro */
+.form-error {
+  font-size: 0.75rem;
+  color: var(--color-danger);
+  min-height: 16px;
+}
+
+/* Botoes do form */
+.form-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--color-border);
+}
+
+/* Input group com icone */
+.form-input-group {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.form-input-group:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0,115,234,0.14);
+}
+.form-input-group .form-input {
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+.form-input-group .form-input:focus { box-shadow: none; }
+.form-input-group__icon {
+  padding: 0 10px;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}

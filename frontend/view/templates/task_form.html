@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nova Tarefa</title>
+  <link rel="stylesheet" href="/view/css/base.css" />
+  <link rel="stylesheet" href="/view/css/form.css" />
+</head>
+<body>
+  <!--
+    TEMPLATE DE REFERÊNCIA — Formulário de Criação de Task
+    Renderizado pelo React (TaskFormPage.jsx) quando rota /tasks/new é ativada.
+    Campos: titulo (obrigatório), descricao (obrigatório), status (enum).
+
+    Estrutura:
+      header.form-header    → Breadcrumb + título
+      form.task-form        → Campos do formulário controlados pelo React
+        .form-group         → Input de título
+        .form-group         → Textarea de descrição
+        .form-group         → Select de status
+        .form-actions       → Botão cancelar + botão salvar
+  -->
+  <div id="root">
+    <header class="form-header">
+      <nav class="breadcrumb">
+        <a href="/">Início</a>
+        <span>/</span>
+        <a href="/board">Board</a>
+        <span>/</span>
+        <span>Nova Tarefa</span>
+      </nav>
+      <h1>Criar Nova Tarefa</h1>
+    </header>
+
+    <main class="form-container">
+      <form class="task-form" id="task-form" novalidate>
+        <div class="form-group">
+          <label for="titulo" class="form-label">Título <span class="required">*</span></label>
+          <input
+            type="text"
+            id="titulo"
+            name="titulo"
+            class="form-input"
+            placeholder="Descreva o título da tarefa"
+            required
+            maxlength="120"
+          />
+          <span class="form-error" id="error-titulo"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="descricao" class="form-label">Descrição <span class="required">*</span></label>
+          <textarea
+            id="descricao"
+            name="descricao"
+            class="form-input form-input--textarea"
+            placeholder="Descreva os detalhes da tarefa"
+            required
+            rows="5"
+          ></textarea>
+          <span class="form-error" id="error-descricao"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="status" class="form-label">Status</label>
+          <select id="status" name="status" class="form-input form-input--select">
+            <option value="pendente" selected>Pendente</option>
+            <option value="concluida">Concluída</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <a href="/board" class="btn btn--secondary">Cancelar</a>
+          <button type="submit" class="btn btn--primary">Salvar Tarefa</button>
+        </div>
+      </form>
+    </main>
+  </div>
+  <script type="module" src="/view/react/main.jsx"></script>
+</body>
+</html>

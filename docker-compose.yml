@@ -1,0 +1,70 @@
+version: '3.8'
+
+networks:
+  public_net:
+    driver: bridge
+  private_net:
+    driver: bridge
+    internal: true # Strict C4 Model Security: Acesso negado à internet externa.
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: proxy_gateway
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - public_net
+      - private_net
+    depends_on:
+      - backend
+      - frontend
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend_service
+    # O frontend não expõe portas. Ele é acessado pelo Nginx via private_net.
+    networks:
+      - private_net
+
+  backend:
+    build:
+      context: ./backend
+    container_name: backend_service
+    environment:
+      - DB_HOST=postgres
+      - DB_USER=task_user
+      - DB_PASSWORD=task_pass
+      - DB_NAME=task_db
+      - REDIS_HOST=redis
+    # O backend jamais é exposto ao host
+    networks:
+      - private_net
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: relational_db
+    environment:
+      - POSTGRES_USER=task_user
+      - POSTGRES_PASSWORD=task_pass
+      - POSTGRES_DB=task_db
+    # Teste de Infraestrutura Exige: ZERO portas expostas ao ambiente local
+    networks:
+      - private_net
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: memory_cache
+    networks:
+      - private_net
+
+volumes:
+  pg_data:
