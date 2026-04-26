@@ -2,6 +2,41 @@
 
 Todas as mudanças notáveis que ocorrerão no ciclo de vida de desenvolvimento desse projeto (Gerenciador de Tarefas) serão documentadas neste arquivo.
 
+## 26/04/2026 05:00
+
+### Projeto — Release Geral: Stack Completo, .env Publicado para Onboarding e Histórico de Desenvolvimento
+
+#### Contexto
+
+Este commit encerra o primeiro ciclo de desenvolvimento do **Gerenciador de Tarefas**, um sistema enterprise completo construído em ~8 horas de desenvolvimento ativo ao longo de dois dias (25–26/04/2026), com uma pausa de 8h entre as sessões.
+
+O projeto foi desenvolvido do zero: da definição arquitetural até a UI funcional com boards, quadros, grupos e tarefas operando em toda a stack — FastAPI → Redis Queue → PostgreSQL → React/Vite.
+
+#### Decisão — `.env` versionado intencionalmente
+
+Os arquivos `.env` (raiz e `backend/.env`) foram removidos do `.gitignore` e commitados com valores de desenvolvimento local. **Esta decisão é deliberada:** o projeto é open-source de estudo e as credenciais presentes (`changeme_in_production`, `taskuser`) são exclusivamente para o ambiente Docker de desenvolvimento local. O objetivo é que qualquer pessoa que clone o repositório consiga executar `docker compose up --build` imediatamente, sem configuração adicional. Ambientes de produção devem substituir os valores antes do deploy — isso está documentado no `README.md`.
+
+#### Resumo do Ciclo de Desenvolvimento
+
+**Dia 1 — 25/04/2026 (~12h–22h):**
+- Definição de arquitetura, PDD, fluxos ACID, C4-Model, topologia de rede.
+- Fundação TDD: testes unitários, de integração e de infraestrutura.
+- Pipeline GitHub Actions com serviços reais no Job.
+
+**Pausa: ~8 horas (madrugada 25→26/04)**
+
+**Dia 2 — 26/04/2026 (~03h–05h):**
+- BFF Node.js/Express com Redis Queue (14 comandos mapeados) e Cache LRU por sessão.
+- Backend reescrito com arquitetura hexagonal, repositórios, schemas Pydantic v2, soft-delete, idempotência.
+- Frontend React completo: Layout com sidebar dinâmico (todos os boards + quadros), HomePage com cards, sistema de contexto menu + modal de confirmação, limite de 10 boards com bloqueio de UI.
+- Docker Compose simplificado via `COMPOSE_FILE` no `.env` raiz — `docker compose up --build` sem flags.
+
+**Total de desenvolvimento ativo: ~8 horas.**
+
+#### Alterado
+- `.gitignore` — linhas de `.env` e `frontend/.env` comentadas; arquivos de ambiente agora versionados para facilitar onboarding.
+- `.env` (raiz) — adicionado `COMPOSE_FILE=docker-compose.dev.yml` para simplificar o comando de subida do stack.
+
 ## 26/04/2026 04:30
 
 ### Backend — Refatoração SOLID: Arquitetura Hexagonal, Repositórios, Schemas Pydantic v2 e Webhook Produção
