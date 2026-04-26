@@ -2,6 +2,21 @@
 
 Todas as mudanças notáveis que ocorrerão no ciclo de vida de desenvolvimento desse projeto (Gerenciador de Tarefas) serão documentadas neste arquivo.
 
+## 26/04/2026 05:30
+
+### Frontend — Exibição do ID da tarefa nas views de Board e Quadro
+
+#### Contexto e Decisão
+
+O schema da entidade `Task` define `id` como campo obrigatório e identificador único. Porém a UI não o apresentava em nenhuma das duas views de visualização de tarefas. Para conformidade com o modelo de dados e rastreabilidade (útil para referência cruzada, suporte e debugging), o ID passou a ser exibido diretamente nas linhas e cards de tarefa.
+
+A exibição usa os primeiros 8 caracteres do UUID (`#xxxxxxxx`) — suficiente para identificação visual sem poluir o layout. Fonte monospace e cor `text-muted` garantem hierarquia visual: o ID é informativo mas não compete com o título.
+
+#### Alterado
+
+- `frontend/view/react/pages/BoardPage.jsx` — coluna TAREFA da tabela de grupo agora exibe `#xxxxxxxx` entre o ícone ▶ e o nome da tarefa.
+- `frontend/view/react/pages/QuadroPage.jsx` — cards Kanban (pendente e concluída) agora exibem `#xxxxxxxx` acima do título.
+
 ## 26/04/2026 05:00
 
 ### Projeto — Release Geral: Stack Completo, .env Publicado para Onboarding e Histórico de Desenvolvimento

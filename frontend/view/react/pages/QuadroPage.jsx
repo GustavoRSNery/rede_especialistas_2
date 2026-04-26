@@ -53,6 +53,7 @@ export default function QuadroPage() {
               ? <p style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>Nenhuma tarefa pendente.</p>
               : pendentes.map((task) => (
                 <div key={task.id} className="quadro-card">
+                  <span style={{ fontSize: '0.68rem', color: 'var(--color-text-muted)', fontFamily: 'monospace', letterSpacing: 0 }}>#{task.id.slice(0, 8)}</span>
                   <h3 className="quadro-card__title">{task.titulo}</h3>
                   <p className="quadro-card__meta">{new Date(task.criado_em).toLocaleDateString('pt-BR')}</p>
                   <div className="quadro-card__actions">
@@ -79,6 +80,7 @@ export default function QuadroPage() {
               ? <p style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>Nenhuma tarefa concluída.</p>
               : concluidas.map((task) => (
                 <div key={task.id} className="quadro-card">
+                  <span style={{ fontSize: '0.68rem', color: 'var(--color-text-muted)', fontFamily: 'monospace', letterSpacing: 0 }}>#{task.id.slice(0, 8)}</span>
                   <h3 className="quadro-card__title" style={{ textDecoration: 'line-through', opacity: 0.6 }}>{task.titulo}</h3>
                   <p className="quadro-card__meta">{new Date(task.criado_em).toLocaleDateString('pt-BR')}</p>
                   <div className="quadro-card__actions">

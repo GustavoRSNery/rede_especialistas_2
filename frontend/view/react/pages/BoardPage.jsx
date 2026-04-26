@@ -180,6 +180,9 @@ export default function BoardPage() {
                           <td>
                             <span className="task-row__title">
                               <span className="task-row__title-icon">&#9654;</span>
+                              <span style={{ fontSize: '0.68rem', color: 'var(--color-text-muted)', fontFamily: 'monospace', marginRight: 6 }}>
+                                #{task.id.slice(0, 8)}
+                              </span>
                               <span className={task.status === 'concluida' ? 'task-row__name--concluida' : ''}>
                                 {task.titulo}
                               </span>
