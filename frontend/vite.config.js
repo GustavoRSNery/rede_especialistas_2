@@ -53,21 +53,23 @@ export default defineConfig({
     proxy: {
       // Fila de comandos Redis → BFF Express
       '/api/queue': {
-        target: process.env.VITE_BFF_URL || 'http://localhost:3000',
+        target: process.env.BFF_PROXY_URL || 'http://localhost:3000',
         changeOrigin: true,
       },
       // Cache Redis LRU → BFF Express
       '/api/cache': {
-        target: process.env.VITE_BFF_URL || 'http://localhost:3000',
+        target: process.env.BFF_PROXY_URL || 'http://localhost:3000',
         changeOrigin: true,
       },
       '/backend': {
-        target: 'http://localhost:80',
+        target: process.env.VITE_BACKEND_URL || 'http://localhost:8000',
         changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/backend/, ''),
       },
       '/frontend': {
-        target: 'http://localhost:80',
+        target: process.env.VITE_BACKEND_URL || 'http://localhost:8000',
         changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/frontend/, ''),
       },
     },
   },

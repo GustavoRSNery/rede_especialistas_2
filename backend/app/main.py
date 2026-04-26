@@ -1,8 +1,20 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import api, webhook
+from app.routes.webhook import _http_client
+from app.db import create_pool, close_pool
 
-app = FastAPI(title="Backend Central - Gerenciador de Tarefas")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app.state.pool = await create_pool()
+    yield
+    await close_pool(app.state.pool)
+    await _http_client.aclose()
+
+
+app = FastAPI(title="Backend Central - Gerenciador de Tarefas", lifespan=lifespan)
 
 # CORS: Aceita origem apenas do Nginx Gateway. Nunca origens externas diretas.
 # O frontend acessa via Nginx (/backend/api/), e não diretamente na porta 8000.

@@ -1,11 +1,13 @@
-# docker-compose.dev.yml — Frontend dev + BFF + Redis
+# docker-compose.dev.yml — Frontend dev + BFF + Redis + PostgreSQL + Backend
 # Uso: docker compose -f docker-compose.dev.yml up --build
 # Acesse: http://localhost:5173/
 #
 # Serviços:
 #   redis-dev    → Redis 7 (porta 6379 exposta para debug local)
+#   postgres-dev → PostgreSQL 15 (porta 5432 exposta para debug local)
+#   backend-dev  → FastAPI uvicorn --reload (porta 8000)
 #   bff-dev      → Express BFF com queue worker (porta 3000)
-#   frontend-dev → Vite React (porta 5173); proxy /api/queue → bff-dev:3000
+#   frontend-dev → Vite React (porta 5173); proxy /api/ → bff-dev:3000
 
 services:
   redis-dev:
@@ -13,6 +15,35 @@ services:
     container_name: redis_dev
     ports:
       - "6379:6379"
+
+  postgres-dev:
+    image: postgres:15-alpine
+    container_name: postgres_dev
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=taskuser
+      - POSTGRES_PASSWORD=changeme_in_production
+      - POSTGRES_DB=taskmanager
+    volumes:
+      - pg_data_dev:/var/lib/postgresql/data
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+  backend-dev:
+    image: python:3.11-alpine
+    container_name: backend_dev
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    command: sh -c "pip install --no-cache-dir -r requirements.txt && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+    env_file:
+      - ./backend/.env
+    environment:
+      - DB_HOST=postgres-dev
+    depends_on:
+      - postgres-dev
 
   bff-dev:
     image: node:20-alpine
@@ -26,11 +57,12 @@ services:
     command: sh -c "npm install --loglevel=error && node server.js"
     environment:
       - REDIS_URL=redis://redis-dev:6379
-      - BACKEND_API_URL=http://localhost/backend/api
-      - BACKEND_WEBHOOK_URL=http://localhost/backend/webhook
+      - BACKEND_API_URL=http://backend-dev:8000/api
+      - BACKEND_WEBHOOK_URL=http://backend-dev:8000/webhook
       - PORT=3000
     depends_on:
       - redis-dev
+      - backend-dev
 
   frontend-dev:
     image: node:20-alpine
@@ -43,6 +75,11 @@ services:
     command: sh -c "npm config set update-notifier false && npm install --loglevel=error && npm run dev -- --host"
     environment:
       - VITE_BACKEND_API_URL=/backend/api
-      - VITE_BFF_URL=http://bff-dev:3000
+      - VITE_BFF_URL=
+      - BFF_PROXY_URL=http://bff-dev:3000
+      - VITE_BACKEND_URL=http://backend-dev:8000
     depends_on:
       - bff-dev
+
+volumes:
+  pg_data_dev:

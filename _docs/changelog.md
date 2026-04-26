@@ -2,6 +2,65 @@
 
 Todas as mudanças notáveis que ocorrerão no ciclo de vida de desenvolvimento desse projeto (Gerenciador de Tarefas) serão documentadas neste arquivo.
 
+## 26/04/2026 04:30
+
+### Backend — Refatoração SOLID: Arquitetura Hexagonal, Repositórios, Schemas Pydantic v2 e Webhook Produção
+
+#### Contexto e Decisões Arquiteturais
+
+O backend original era um monobloco em `main.py` com queries SQL inline e sem separação de responsabilidades. Nesta sessão o microsserviço foi integralmente reescrito seguindo os princípios SOLID e a arquitetura Hexagonal (Ports & Adapters), separando a aplicação em quatro camadas autônomas: **rotas**, **schemas**, **repositórios** e **infraestrutura de banco**.
+
+A decisão de manter SQL puro via `asyncpg` (sem ORM) foi deliberada: evita o custo de abstração do SQLAlchemy em queries de alta frequência, garante controle total sobre os índices e não introduz N+1 oculto. Todos os parâmetros são posicionais (`$1`, `$2`) — imunes a SQL Injection por design do driver.
+
+O soft-delete foi adotado como invariante de domínio: nenhuma entidade sofre `DELETE` físico. Boards, quadros, grupos e tarefas ganham `is_deleted = TRUE` via `UPDATE`, preservando integridade referencial e rastreabilidade de auditoria futura.
+
+A idempotência é imposta a nível de transporte: toda mutação (`POST`, `PUT`, `DELETE`) exige os headers `Idempotency-Key` e `X-Nonce`, validados em `helpers.require_security_headers()` antes de qualquer acesso ao banco. Headers ausentes retornam `400` imediatamente, sem custo de I/O.
+
+#### Adicionado
+
+**Camada de Infraestrutura:**
+- `backend/app/db.py` — Pool `asyncpg` com ciclo de vida gerenciado pelo `lifespan` do FastAPI; `min_size=2`, `max_size=10`, `command_timeout=30s`; configuração via variáveis de ambiente (`DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`).
+
+**Camada de Aplicação — Entrypoint:**
+- `backend/app/main.py` — `FastAPI` com `lifespan` que cria o pool no startup e fecha pool + singleton `httpx.AsyncClient` no shutdown. CORS restrito a `http://localhost` e `http://nginx` (nunca origens externas diretas). Dois routers montados: `/api` (CRUD síncrono) e `/webhook` (jobs assíncronos).
+
+**Camada de Schemas (Pydantic v2):**
+- `backend/app/schemas/task_schema.py` — `TaskInbound`, `TaskUpdateInbound`.
+- `backend/app/schemas/board_schema.py` — `BoardInbound`, `BoardUpdateInbound`.
+- `backend/app/schemas/quadro_schema.py` — `QuadroInbound`, `QuadroUpdateInbound`.
+- `backend/app/schemas/grupo_schema.py` — `GrupoInbound`, `GrupoUpdateInbound`.
+- `backend/app/schemas/__init__.py` — re-exporta todos os schemas.
+
+**Camada de Repositórios (SQL puro asyncpg):**
+- `backend/app/repositories/task_repo.py` — CRUD completo + soft-delete; queries com `$N` posicionais.
+- `backend/app/repositories/board_repo.py` — `list_boards`, `get_board`, `create_board`, `update_board`, `soft_delete_board`.
+- `backend/app/repositories/quadro_repo.py` — `list_quadros_by_board`, `get_quadro`, `create_quadro`, `update_quadro`, `soft_delete_quadro`.
+- `backend/app/repositories/grupo_repo.py` — `list_grupos_by_quadro`, `get_grupo`, `create_grupo`, `update_grupo`, `soft_delete_grupo`.
+
+**Camada de Rotas (FastAPI APIRouter):**
+- `backend/app/routes/tasks.py` — 5 handlers: `GET /tasks`, `POST /tasks`, `GET /tasks/{id}`, `PUT /tasks/{id}`, `DELETE /tasks/{id}`.
+- `backend/app/routes/boards.py` — 5 handlers: list, create, get, update, soft-delete.
+- `backend/app/routes/quadros.py` — 5 handlers: list por board, create, get, update, soft-delete.
+- `backend/app/routes/grupos.py` — 5 handlers: list por quadro, create, get, update, soft-delete. Inclui `GET /grupos/{id}/tasks`.
+- `backend/app/routes/api.py` — Agregador de 9 linhas: inclui os 4 routers acima; ponto único de montagem em `/api`.
+- `backend/app/routes/webhook.py` — Reescrito para produção:
+  - `_http_client = httpx.AsyncClient(timeout=10.0)` — singleton módulo-nível, reutiliza connection pool HTTP; fechado via `lifespan`.
+  - `POST /webhook/tasks/process` — aceita job, retorna `202 Accepted` imediatamente, delega `_process_job` ao `BackgroundTasks` do FastAPI (sem bloqueio do event loop).
+  - `notify_frontend_job_completed` e `push_tasks_to_frontend` — comunicação server-to-server via Nginx; nunca exposta ao cliente.
+
+**Utilitários:**
+- `backend/app/helpers.py` — `require_security_headers(idempotency_key, x_nonce)`: levanta `HTTP 400` se ausentes. `serialize(obj)`: converte `UUID` e `datetime` para JSON-safe sem dependência externa.
+
+#### Alterado
+- `backend/app/main.py` — substituído entrypoint monolítico por aplicação com lifespan, CORS configurado e dois routers montados.
+- `backend/app/routes/webhook.py` — substituído padrão `async with httpx.AsyncClient()` por-chamada (overhead de conexão a cada request) por singleton + `BackgroundTasks`.
+
+#### Decisões de Segurança (OWASP)
+- **Injection (A03)**: SQL parametrizado `$1..$N` via asyncpg — injeção impossível por design.
+- **Security Misconfiguration (A05)**: CORS origin list explícita; nenhum wildcard `*`.
+- **Insecure Design (A04)**: Soft-delete preserva trilha de auditoria; sem destruição de dados acidental.
+- **Broken Access Control (A01)**: Headers `Idempotency-Key` + `X-Nonce` obrigatórios em toda mutação; validação antes de qualquer I/O.
+
 ## 26/04/2026 03:15
 
 ### Redis — Fila de Comandos (Queue) e Cache LRU por Sessão

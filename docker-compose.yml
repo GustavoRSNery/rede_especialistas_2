@@ -36,10 +36,12 @@ services:
     container_name: backend_service
     environment:
       - DB_HOST=postgres
-      - DB_USER=task_user
-      - DB_PASSWORD=task_pass
-      - DB_NAME=task_db
+      - DB_PORT=5432
+      - DB_USER=taskuser
+      - DB_PASSWORD=changeme_in_production
+      - DB_NAME=taskmanager
       - REDIS_HOST=redis
+      - REDIS_PORT=6379
     # O backend jamais é exposto ao host
     networks:
       - private_net
@@ -51,14 +53,15 @@ services:
     image: postgres:15-alpine
     container_name: relational_db
     environment:
-      - POSTGRES_USER=task_user
-      - POSTGRES_PASSWORD=task_pass
-      - POSTGRES_DB=task_db
+      - POSTGRES_USER=taskuser
+      - POSTGRES_PASSWORD=changeme_in_production
+      - POSTGRES_DB=taskmanager
     # Teste de Infraestrutura Exige: ZERO portas expostas ao ambiente local
     networks:
       - private_net
     volumes:
       - pg_data:/var/lib/postgresql/data
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
 
   redis:
     image: redis:7-alpine
