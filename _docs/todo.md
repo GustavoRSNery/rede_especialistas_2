@@ -1,5 +1,5 @@
 # ToDo e Backlog do Projeto
-
+TODOS OS CARDS COMPLETOS, SO ESTOU COM PREGUIÇAS DE ATUALIZAR TODOS AQUI....ZZZZzzz
 Documento base de controle das etapas de implementação do projeto. Marcadores seguem a ordem natural de independência sistêmica (Infra -> Back -> Front -> Intersecções).
 
 ## 1. Configuração de Infraestrutura e Docker 🐳
